@@ -115,13 +115,21 @@ class FScroll {
     inst.sbar[0].scrollLeft = sender.scrollLeft;
   }
 
+  // Compute outer width of an element with margin
+  outerWidth(el) {
+    let width = el.offsetWidth;
+    const style = getComputedStyle(el);
+    width += parseInt(style.marginLeft) + parseInt(style.marginRight);
+    return width;
+  }
+
   // Recalculate scroll width and container boundaries
   updateAPI() {
     let inst = this;
     let { cont } = inst;
     inst.sbar.width = cont.offsetWidth;
     // console.log('const sbar', cont, cont.outerWidth, cont.width, cont.clientWidth, cont.offsetWidth, cont.scrollWidth)
-    console.log('const sbar', inst.sbar, cont.getBoundingClientRect().left)
+    console.log('const sbar', inst.sbar, inst.outerWidth(cont))
     if (!inst.scrollBody) {
       inst.sbar.style.left = `${cont.getBoundingClientRect().left}px`;
     }
