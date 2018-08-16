@@ -78,18 +78,18 @@ class FScroll {
 
   checkVisibility() {
     let inst = this;
-    let mustHide = inst.sbar[0].scrollWidth <= inst.sbar[0].offsetWidth;
+    let mustHide = inst.sbar.scrollWidth <= inst.sbar.offsetWidth;
     if (!mustHide) {
       let contRect = inst.cont.getBoundingClientRect();
       let maxVisibleY = inst.scrollBody
-        ? inst.scrollBody[0].getBoundingClientRect().bottom
+        ? inst.scrollBody.getBoundingClientRect().bottom
         : window.innerHeight || document.documentElement.clientHeight;
       mustHide = contRect.bottom <= maxVisibleY || contRect.top > maxVisibleY;
     }
     if (inst.visible === mustHide) {
       inst.visible = !mustHide;
       // we cannot simply hide a floating scroll bar since its scrollLeft property will not update in that case
-      inst.sbar.toggleClass('fl-scrolls-hidden');
+      inst.sbar.classList.toggle('fl-scrolls-hidden');
     }
   }
 
