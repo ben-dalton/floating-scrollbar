@@ -10,7 +10,6 @@ class FScroll {
       inst.scrollBody = scrollBody;
     }
     inst.sbar = inst.initScroll();
-    console.log('tag', inst.sbar)
     inst.visible = true;
     inst.updateAPI(); // recalculate floating scrolls and hide those of them whose containers are out of sight
     inst.syncSbar(inst.cont);
@@ -100,7 +99,6 @@ class FScroll {
 
   checkVisibility() {
     let inst = this;
-    console.log('checking that', inst.sbar, inst.sbar.scrollWidth, inst.sbar.offsetWidth)
     let mustHide = inst.sbar.scrollWidth <= inst.sbar.offsetWidth;
     if (!mustHide) {
       let contRect = inst.cont.getBoundingClientRect();
@@ -151,18 +149,18 @@ class FScroll {
     let inst = this;
     let { cont } = inst;
     inst.sbar.style.width = `${inst.outerWidth(cont)}px`;
-    console.log('update api', inst.outerWidth(cont), cont.scrollWidth);
+    // console.log('checking', cont.offsetWidth, getComputedStyle(cont).width);
     if (!inst.scrollBody) {
       inst.sbar.style.left = `${cont.getBoundingClientRect().left}px`;
     }
-    // inst.sbar.style.width = `${cont.scrollWidth}px`;
-    // inst.sbar.setAttribute('width', cont.scrollWidth);
     inst.checkVisibility(); // fixes issue #2
   }
 
   // Remove a scrollbar and all related event handlers
   destroyAPI() {
-    this.eventHandlers.forEach(({ $el, handlers }) => $el.unbind(handlers));
+    this.eventHandlers.forEach(({ elem, events }) => {
+      events.forEach(({ name, handler }) => elem.removeEventListener(name, handler));
+    });
     this.eventHandlers = null;
     this.sbar.remove();
   }
