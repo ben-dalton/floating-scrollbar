@@ -127,13 +127,11 @@ class FScroll {
   updateAPI() {
     let inst = this;
     let { cont } = inst;
-    inst.sbar.width = cont.offsetWidth;
-    // console.log('const sbar', cont, cont.outerWidth, cont.width, cont.clientWidth, cont.offsetWidth, cont.scrollWidth)
-    console.log('const sbar', inst.sbar, inst.outerWidth(cont))
+    inst.sbar.width = inst.outerWidth(cont);
     if (!inst.scrollBody) {
       inst.sbar.style.left = `${cont.getBoundingClientRect().left}px`;
     }
-    $('div', inst.sbar).width(cont.scrollWidth);
+    inst.sbar.setAttribute('width', cont.scrollWidth);
     inst.checkVisibility(); // fixes issue #2
   }
 
