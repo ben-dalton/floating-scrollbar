@@ -9,6 +9,7 @@ class FScroll {
       inst.scrollBody = scrollBody;
     }
     inst.sbar = inst.initScroll();
+    console.log('tag', inst.sbar[0])
     inst.visible = true;
     inst.updateAPI(); // recalculate floating scrolls and hide those of them whose containers are out of sight
     inst.syncSbar(inst.cont);
@@ -122,6 +123,7 @@ class FScroll {
       inst.sbar.css('left', `${cont.getBoundingClientRect().left}px`);
     }
     $('div', inst.sbar).width(cont.scrollWidth);
+    console.log('update api', inst.sbar[0], $(cont).outerWidth());
     inst.checkVisibility(); // fixes issue #2
   }
 

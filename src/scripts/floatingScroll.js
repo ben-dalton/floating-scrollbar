@@ -10,6 +10,7 @@ class FScroll {
       inst.scrollBody = scrollBody;
     }
     inst.sbar = inst.initScroll();
+    console.log('tag', inst.sbar)
     inst.visible = true;
     inst.updateAPI(); // recalculate floating scrolls and hide those of them whose containers are out of sight
     inst.syncSbar(inst.cont);
@@ -28,7 +29,6 @@ class FScroll {
 
   addEventHandlers() {
     let inst = this;
-    console.log('check this', inst.scrollBody, window, inst.sbar, inst.cont)
     let eventHandlers = (inst.eventHandlers = [
       {
         elem: inst.scrollBody || window,
@@ -53,7 +53,6 @@ class FScroll {
           {
             name: 'scroll',
             handler: ({ target }) => {
-              console.log('tag', 'scrolled')
               inst.visible && inst.syncCont(target, true);
             },
           }
@@ -101,6 +100,7 @@ class FScroll {
 
   checkVisibility() {
     let inst = this;
+    console.log('checking that', inst.sbar, inst.sbar.scrollWidth, inst.sbar.offsetWidth)
     let mustHide = inst.sbar.scrollWidth <= inst.sbar.offsetWidth;
     if (!mustHide) {
       let contRect = inst.cont.getBoundingClientRect();
@@ -150,11 +150,13 @@ class FScroll {
   updateAPI() {
     let inst = this;
     let { cont } = inst;
-    inst.sbar.width = inst.outerWidth(cont);
+    inst.sbar.style.width = `${inst.outerWidth(cont)}px`;
+    console.log('update api', inst.outerWidth(cont), cont.scrollWidth);
     if (!inst.scrollBody) {
       inst.sbar.style.left = `${cont.getBoundingClientRect().left}px`;
     }
-    inst.sbar.setAttribute('width', cont.scrollWidth);
+    // inst.sbar.style.width = `${cont.scrollWidth}px`;
+    // inst.sbar.setAttribute('width', cont.scrollWidth);
     inst.checkVisibility(); // fixes issue #2
   }
 
