@@ -28,52 +28,75 @@ class FScroll {
 
   addEventHandlers() {
     let inst = this;
+    console.log('check this', inst.scrollBody, window, inst.sbar, inst.cont)
     let eventHandlers = (inst.eventHandlers = [
       {
-        $el: inst.scrollBody || $(window),
-        handlers: {
-          // Don't use `$.proxy()` since it makes impossible event unbinding individually per instance
-          // (see the warning at http://api.jquery.com/unbind/)
-          scroll() {
-            inst.checkVisibility();
+        elem: inst.scrollBody || window,
+        events: [
+          {
+            name: 'scroll',
+            handler: () => {
+              inst.checkVisibility();
+            },
           },
-          resize() {
-            inst.updateAPI();
-          },
-        },
-      },
-      {
-        $el: inst.sbar,
-        handlers: {
-          scroll({ target }) {
-            inst.visible && inst.syncCont(target, true);
-          },
-        },
-      },
-      {
-        $el: $(inst.cont),
-        handlers: {
-          scroll({ target }) {
-            inst.syncSbar(target, true);
-          },
-          focusin() {
-            setTimeout(inst.syncSbar.bind(inst, inst.cont), 0);
-          },
-          'update.fscroll'({ namespace }) {
-            // Check event namespace to ensure that this is not an extraneous event in a bubbling phase
-            if (namespace === 'fscroll') {
+          {
+            name: 'resize',
+            handler: () => {
               inst.updateAPI();
-            }
+            },
           },
-          'destroy.fscroll'({ namespace }) {
-            if (namespace === 'fscroll') {
-              inst.destroyAPI();
-            }
+        ],
+      },
+      {
+        elem: inst.sbar,
+        events: [
+          {
+            name: 'scroll',
+            handler: ({ target }) => {
+              console.log('tag', 'scrolled')
+              inst.visible && inst.syncCont(target, true);
+            },
+          }
+        ] ,
+      },
+      {
+        elem: inst.cont,
+        events: [
+          {
+            name: 'scroll',
+            handler: ({ target }) => {
+              inst.syncSbar(target, true);
+            },
           },
-        },
+          {
+            name: 'focusin',
+            handler: () => {
+              setTimeout(inst.syncSbar.bind(inst, inst.cont), 0);
+            },
+          },
+          {
+            name: 'update.fscroll',
+            handler: ({ namespace }) => {
+              // Check event namespace to ensure that this is not an extraneous event in a bubbling phase
+              if (namespace === 'fscroll') {
+                inst.updateAPI();
+              }
+            },
+          },
+          {
+            name: 'destroy.fscroll',
+            handler: ({ namespace }) => {
+              if (namespace === 'fscroll') {
+                inst.destroyAPI();
+              }
+            },
+          }
+        ],
       },
     ]);
-    eventHandlers.forEach(({ $el, handlers }) => $el.bind(handlers));
+    eventHandlers.forEach(({ elem, events }) => {
+      events.forEach(({ name, handler }) => elem.addEventListener(name, handler));
+    });
   }
 
   checkVisibility() {
