@@ -4,7 +4,6 @@ class FScroll {
   constructor(cont) {
     let inst = this;
     inst.cont = cont;
-    // debugger;
     let scrollBody = cont.closest('.fl-scrolls-body');
     if (scrollBody && scrollBody.length) {
       inst.scrollBody = scrollBody;
@@ -149,7 +148,6 @@ class FScroll {
     let inst = this;
     let { cont } = inst;
     inst.sbar.style.width = `${inst.outerWidth(cont)}px`;
-    console.log('checking', inst.outerWidth(cont), cont.offsetWidth, getComputedStyle(cont).width);
     if (!inst.scrollBody) {
       inst.sbar.style.left = `${cont.getBoundingClientRect().left}px`;
     }
