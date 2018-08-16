@@ -162,7 +162,7 @@ class FScroll {
       events.forEach(({ name, handler }) => elem.removeEventListener(name, handler));
     });
     this.eventHandlers = null;
-    this.sbar.remove();
+    this.sbar.parentNode.removeChild(this.sbar);
   }
 }
 
@@ -170,8 +170,7 @@ function floatingScroll(els, method = 'init') {
   if (method === 'init') {
     Array.prototype.forEach.call(els, (el, i) => new FScroll(el));
   } else if (FScroll.prototype.hasOwnProperty(`${method}API`)) {
-    // TODO
-    this.trigger(`${method}.fscroll`);
+    this.dispatchEvent(new Event(`${method}.fscroll`));
   }
   return this;
 }
