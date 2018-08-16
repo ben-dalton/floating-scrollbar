@@ -35,7 +35,7 @@ class FScroll {
           {
             name: 'scroll',
             handler: () => {
-              inst.checkVisibility();
+              inst.updateAPI();
             },
           },
           {
@@ -149,7 +149,7 @@ class FScroll {
     let inst = this;
     let { cont } = inst;
     inst.sbar.style.width = `${inst.outerWidth(cont)}px`;
-    // console.log('checking', cont.offsetWidth, getComputedStyle(cont).width);
+    console.log('checking', inst.outerWidth(cont), cont.offsetWidth, getComputedStyle(cont).width);
     if (!inst.scrollBody) {
       inst.sbar.style.left = `${cont.getBoundingClientRect().left}px`;
     }
