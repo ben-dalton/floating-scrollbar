@@ -3,7 +3,8 @@ import $ from 'jquery';
 class FScroll {
   constructor(cont) {
     let inst = this;
-    inst.cont = cont[0];
+    inst.cont = cont;
+    console.log('cont and inst', this, this.cont, this.inst)
     debugger;
     let scrollBody = cont.closest('.fl-scrolls-body');
     if (scrollBody && scrollBody.length) {
@@ -21,6 +22,7 @@ class FScroll {
     flscroll.classList.add('fl-scrolls');
     let { cont } = this;
     let newDiv = document.createElement('div');
+    console.log('new div', newDiv)
     newDiv.style.width = `${cont.scrollWidth}px`;
     flscroll.appendChild(newDiv);
     return cont.appendChild(flscroll);
