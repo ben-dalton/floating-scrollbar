@@ -112,7 +112,7 @@ class FScroll {
       return;
     }
     inst.preventSyncCont = !!preventSyncCont;
-    inst.sbar[0].scrollLeft = sender.scrollLeft;
+    inst.sbar.scrollLeft = sender.scrollLeft;
   }
 
   // Compute outer width of an element with margin
