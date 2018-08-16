@@ -8,7 +8,6 @@ body {
 
 .container {
   width: 600px;
-  // height: 600px;
   overflow: scroll;
   border: 1px solid #ccc;
 }
@@ -19,25 +18,3 @@ thead th {
   background: white;
   border-bottom: 1px solid #ccc;
 }
-// .fl-scrolls::-webkit-scrollbar {
-//   -webkit-appearance: none;
-// }
-
-// .fl-scrolls::-webkit-scrollbar:vertical {
-//   width: 11px;
-// }
-
-// .fl-scrolls::-webkit-scrollbar:horizontal {
-//   height: 11px;
-// }
-
-// .fl-scrolls::-webkit-scrollbar-thumb {
-//   border-radius: 8px;
-//   border: 2px solid white; /* should match background, can't be transparent */
-//   background-color: rgba(0, 0, 0, 0.5);
-// }
-
-// .fl-scrolls::-webkit-scrollbar-track {
-//   background-color: #fff;
-//   border-radius: 8px;
-// }
