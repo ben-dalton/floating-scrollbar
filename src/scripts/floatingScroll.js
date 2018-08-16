@@ -1,5 +1,3 @@
-import $ from 'jquery';
-
 class FScroll {
   constructor(cont) {
     let inst = this;
@@ -53,8 +51,8 @@ class FScroll {
             handler: ({ target }) => {
               inst.visible && inst.syncCont(target, true);
             },
-          }
-        ] ,
+          },
+        ],
       },
       {
         elem: inst.cont,
@@ -87,12 +85,14 @@ class FScroll {
                 inst.destroyAPI();
               }
             },
-          }
+          },
         ],
       },
     ]);
     eventHandlers.forEach(({ elem, events }) => {
-      events.forEach(({ name, handler }) => elem.addEventListener(name, handler));
+      events.forEach(({ name, handler }) => {
+        return elem.addEventListener(name, handler);
+      });
     });
   }
 
@@ -157,7 +157,9 @@ class FScroll {
   // Remove a scrollbar and all related event handlers
   destroyAPI() {
     this.eventHandlers.forEach(({ elem, events }) => {
-      events.forEach(({ name, handler }) => elem.removeEventListener(name, handler));
+      events.forEach(({ name, handler }) => {
+        return elem.removeEventListener(name, handler);
+      });
     });
     this.eventHandlers = null;
     this.sbar.parentNode.removeChild(this.sbar);
@@ -166,7 +168,7 @@ class FScroll {
 
 function floatingScroll(els, method = 'init') {
   if (method === 'init') {
-    Array.prototype.forEach.call(els, (el, i) => new FScroll(el));
+    Array.prototype.forEach.call(els, (el) => new FScroll(el));
   } else if (FScroll.prototype.hasOwnProperty(`${method}API`)) {
     this.dispatchEvent(new Event(`${method}.fscroll`));
   }
