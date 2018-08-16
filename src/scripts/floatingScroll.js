@@ -1,10 +1,7 @@
-import $ from 'jquery';
-
 class FScroll {
   constructor(cont) {
     let inst = this;
-    inst.cont = cont[0];
-    debugger;
+    inst.cont = cont;
     let scrollBody = cont.closest('.fl-scrolls-body');
     if (scrollBody && scrollBody.length) {
       inst.scrollBody = scrollBody;
@@ -30,66 +27,89 @@ class FScroll {
     let inst = this;
     let eventHandlers = (inst.eventHandlers = [
       {
-        $el: inst.scrollBody || $(window),
-        handlers: {
-          // Don't use `$.proxy()` since it makes impossible event unbinding individually per instance
-          // (see the warning at http://api.jquery.com/unbind/)
-          scroll() {
-            inst.checkVisibility();
-          },
-          resize() {
-            inst.updateAPI();
-          },
-        },
-      },
-      {
-        $el: inst.sbar,
-        handlers: {
-          scroll({ target }) {
-            inst.visible && inst.syncCont(target, true);
-          },
-        },
-      },
-      {
-        $el: $(inst.cont),
-        handlers: {
-          scroll({ target }) {
-            inst.syncSbar(target, true);
-          },
-          focusin() {
-            setTimeout(inst.syncSbar.bind(inst, inst.cont), 0);
-          },
-          'update.fscroll'({ namespace }) {
-            // Check event namespace to ensure that this is not an extraneous event in a bubbling phase
-            if (namespace === 'fscroll') {
+        elem: inst.scrollBody || window,
+        events: [
+          {
+            name: 'scroll',
+            handler: () => {
               inst.updateAPI();
-            }
+            },
           },
-          'destroy.fscroll'({ namespace }) {
-            if (namespace === 'fscroll') {
-              inst.destroyAPI();
-            }
+          {
+            name: 'resize',
+            handler: () => {
+              inst.updateAPI();
+            },
           },
-        },
+        ],
+      },
+      {
+        elem: inst.sbar,
+        events: [
+          {
+            name: 'scroll',
+            handler: ({ target }) => {
+              inst.visible && inst.syncCont(target, true);
+            },
+          },
+        ],
+      },
+      {
+        elem: inst.cont,
+        events: [
+          {
+            name: 'scroll',
+            handler: ({ target }) => {
+              inst.syncSbar(target, true);
+            },
+          },
+          {
+            name: 'focusin',
+            handler: () => {
+              setTimeout(inst.syncSbar.bind(inst, inst.cont), 0);
+            },
+          },
+          {
+            name: 'update.fscroll',
+            handler: ({ namespace }) => {
+              // Check event namespace to ensure that this is not an extraneous event in a bubbling phase
+              if (namespace === 'fscroll') {
+                inst.updateAPI();
+              }
+            },
+          },
+          {
+            name: 'destroy.fscroll',
+            handler: ({ namespace }) => {
+              if (namespace === 'fscroll') {
+                inst.destroyAPI();
+              }
+            },
+          },
+        ],
       },
     ]);
-    eventHandlers.forEach(({ $el, handlers }) => $el.bind(handlers));
+    eventHandlers.forEach(({ elem, events }) => {
+      events.forEach(({ name, handler }) => {
+        return elem.addEventListener(name, handler);
+      });
+    });
   }
 
   checkVisibility() {
     let inst = this;
-    let mustHide = inst.sbar[0].scrollWidth <= inst.sbar[0].offsetWidth;
+    let mustHide = inst.sbar.scrollWidth <= inst.sbar.offsetWidth;
     if (!mustHide) {
       let contRect = inst.cont.getBoundingClientRect();
       let maxVisibleY = inst.scrollBody
-        ? inst.scrollBody[0].getBoundingClientRect().bottom
+        ? inst.scrollBody.getBoundingClientRect().bottom
         : window.innerHeight || document.documentElement.clientHeight;
       mustHide = contRect.bottom <= maxVisibleY || contRect.top > maxVisibleY;
     }
     if (inst.visible === mustHide) {
       inst.visible = !mustHide;
       // we cannot simply hide a floating scroll bar since its scrollLeft property will not update in that case
-      inst.sbar.toggleClass('fl-scrolls-hidden');
+      inst.sbar.classList.toggle('fl-scrolls-hidden');
     }
   }
 
@@ -112,35 +132,45 @@ class FScroll {
       return;
     }
     inst.preventSyncCont = !!preventSyncCont;
-    inst.sbar[0].scrollLeft = sender.scrollLeft;
+    inst.sbar.scrollLeft = sender.scrollLeft;
+  }
+
+  // Compute outer width of an element with margin
+  outerWidth(el) {
+    let width = el.offsetWidth;
+    const style = getComputedStyle(el);
+    width += parseInt(style.marginLeft) + parseInt(style.marginRight);
+    return width;
   }
 
   // Recalculate scroll width and container boundaries
   updateAPI() {
     let inst = this;
     let { cont } = inst;
-    inst.sbar.width = $(cont).outerWidth();
+    inst.sbar.style.width = `${inst.outerWidth(cont)}px`;
     if (!inst.scrollBody) {
-      inst.sbar.css('left', `${cont.getBoundingClientRect().left}px`);
+      inst.sbar.style.left = `${cont.getBoundingClientRect().left}px`;
     }
-    $('div', inst.sbar).width(cont.scrollWidth);
     inst.checkVisibility(); // fixes issue #2
   }
 
   // Remove a scrollbar and all related event handlers
   destroyAPI() {
-    this.eventHandlers.forEach(({ $el, handlers }) => $el.unbind(handlers));
+    this.eventHandlers.forEach(({ elem, events }) => {
+      events.forEach(({ name, handler }) => {
+        return elem.removeEventListener(name, handler);
+      });
+    });
     this.eventHandlers = null;
-    this.sbar.remove();
+    this.sbar.parentNode.removeChild(this.sbar);
   }
 }
 
 function floatingScroll(els, method = 'init') {
   if (method === 'init') {
-    Array.prototype.forEach.call(els, (el, i) => new FScroll(el));
+    Array.prototype.forEach.call(els, (el) => new FScroll(el));
   } else if (FScroll.prototype.hasOwnProperty(`${method}API`)) {
-    // TODO
-    this.trigger(`${method}.fscroll`);
+    this.dispatchEvent(new Event(`${method}.fscroll`));
   }
   return this;
 }
