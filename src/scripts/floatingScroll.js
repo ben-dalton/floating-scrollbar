@@ -4,8 +4,7 @@ class FScroll {
   constructor(cont) {
     let inst = this;
     inst.cont = cont;
-    console.log('cont and inst', this, this.cont, this.inst)
-    debugger;
+    // debugger;
     let scrollBody = cont.closest('.fl-scrolls-body');
     if (scrollBody && scrollBody.length) {
       inst.scrollBody = scrollBody;
@@ -22,7 +21,6 @@ class FScroll {
     flscroll.classList.add('fl-scrolls');
     let { cont } = this;
     let newDiv = document.createElement('div');
-    console.log('new div', newDiv)
     newDiv.style.width = `${cont.scrollWidth}px`;
     flscroll.appendChild(newDiv);
     return cont.appendChild(flscroll);
@@ -121,9 +119,11 @@ class FScroll {
   updateAPI() {
     let inst = this;
     let { cont } = inst;
-    inst.sbar.width = $(cont).outerWidth();
+    inst.sbar.width = cont.offsetWidth;
+    // console.log('const sbar', cont, cont.outerWidth, cont.width, cont.clientWidth, cont.offsetWidth, cont.scrollWidth)
+    console.log('const sbar', inst.sbar, cont.getBoundingClientRect().left)
     if (!inst.scrollBody) {
-      inst.sbar.css('left', `${cont.getBoundingClientRect().left}px`);
+      inst.sbar.style.left = `${cont.getBoundingClientRect().left}px`;
     }
     $('div', inst.sbar).width(cont.scrollWidth);
     inst.checkVisibility(); // fixes issue #2
